@@ -1,72 +1,11 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import PropType from 'prop-types';
 import papercss from 'papercss/dist/paper.css'
 
 //import { tsPropertySignature } from '@babel/types';
 
-// function App(props) {
-//   return (
-//     <div>
-//     <h1>{props.msg1}</h1>
-//     <h1>{props.msg2}</h1>
-//     <Othercomponent text="h"></Othercomponent>
-    
-//     </div>
-//     );
-// }
-
-
-// function Othercomponent(props){
-//     let a=" "
-//     if(props.text)
-//     { a="prop there"}
-//     else
-//     {a="No prop there"}
-//      return(
-//     <h2 p className="styled">{a}</h2>
-//      )
-  
-// }
-
-
-// class App extends React.Component{
-//   constructor()
-//   {
-//     var id;
-//     super()
-//     this.state={
-//       counter:0
-//     }
-//   }
- 
-// getInc()
-// {
-//   let a=(this.state.counter+1);
-//   this.setState({
-//     counter:a
-  // })
-  // this.setState({
-  //   counter:this.state.counter+1
-  // })
-// }
-// getDec(){
-// this.setState({
-//   counter:this.state.counter-1
-// })
-// }
-// render()
-// {
-//   return(
-//     <div>
-//        <h1>{this.state.counter}</h1>
-//        <button onClick={() => {this.getInc()}}>Increment</button>
-//        <button onClick={() => {this.getDec()}}>Decrement</button>
-//     </div>
-
-//   )
-// }
-// }
 
 class App extends React.Component{
   constructor()
@@ -76,23 +15,35 @@ class App extends React.Component{
     this.state.list=[]
     this.state.change="";
     this.state.selected=0;
+    this.state.duedate="";
     this.state.total=0;
   }
 
   addToList(){
-    let l= this.state.list;
-    if(this.state.change==="")
-    {return}
-    let obj={title:this.state.change,status:false,time:new Date().toLocaleTimeString(),date:new Date().toDateString()}   
+    if(this.state.change!=="")
+    { 
+      if(this.state.duedate!=="")
+      {
+      let l= this.state.list;
+      let obj={
+      val:this.state.change,
+      title:this.state.change,
+      status:false,
+      time:new Date().toLocaleTimeString(),
+      date:new Date().toDateString(),
+      duedate:this.state.duedate
+      }   
     l.push(obj);
     this.setState({
       list:l,
       change:"",
       total:this.state.total+1,
+      duedate:""
+    })
     }
-    )
-    
+    else alert("enter due date")
   }
+}
 
   changeStatus(i)
   {
@@ -129,9 +80,7 @@ class App extends React.Component{
   }
   dateChanged(e)
   {
-    this.state.duedate({
-      change:e.target.value
-  })
+    this.state.duedate=e.target.value
 }
 
   throwInput(i){
@@ -185,19 +134,32 @@ class App extends React.Component{
    }
    sortBy(e)
    {
-      if(e.target.value=='by name'){
-       let temp=this.state.list
-       let arr=temp.sort(function(a,b){
-         var A=a.val.toLowerCase(), B=b.val.toLowerCase()
+      if(e.target.value==='by name'){
+       let temp=this.state.list;
+       let arr=temp.sort(function(a, b){
+         var A=a.val.toLowerCase(),B=b.val.toLowerCase()
          if(A<B)
           return -1
          if(A>B)
-          return 1 
-        return 0  
-       })
+          return 1  
+       return 0
+        }
+       )
+       
        this.setState({
          list:arr
        })
+    }
+    if(e.target.value==='by date')
+    {
+      let temp=this.state.list
+      let arr=temp.sort(function(a,b){
+      var dateA=new Date(a.duedate), dateB=new Date(b.duedate)
+      return dateA-dateB
+    })
+    this.setState({
+      list: arr
+    })
     }
   } 
 
@@ -207,11 +169,11 @@ class App extends React.Component{
     arr= this.state.list.map((item,i)=>{
       return(
         <div key={i} className="row">
-         <button onClick={(e)=>{this.changeStatus(i)}} className={item.status?"paper-btn btn-success col-4 ":" btn-block col-4 animated slideInUp"} >{item.title}<span> {item.time}</span><span> {item.date}</span></button>
+         <button onClick={(e)=>{this.changeStatus(i)}} className={item.status?"paper-btn btn-success  animated slideInUp col-4 ":"  animated slideInUp btn-block col-4 "} >{item.title}<span> {item.time}</span><span> {item.date}</span></button>
          <button onClick={(e)=>{this.upShift(i)}} className="paper-btn btn-warning   animated slideInUp col-2">UP</button>
          <button onClick={(e)=>{this.downShift(i)}} className="paper-btn btn-secondary   animated slideInUp col-2">DOWN</button>
-         <button onClick={(e)=>{this.throwInput(i)}} className="paper-btn btn-danger   animated slideInUp col-2">X</button>
-         <button className="paper-btn btn-danger animated slideInUp col-2" onClick={(e)=>{this.dateChanged(i)}}>{item.duedate}DUE</button> 
+         <button onClick={(e)=>{this.throwInput(i)}} className="paper-btn btn-primary   animated slideInUp col-2">X</button>
+         <p className="alert alert-danger animated slideInUp col-2">Due Date : {item.duedate}</p>
         </div>
       )
     })
@@ -229,20 +191,26 @@ class App extends React.Component{
            <button className="paper-btn btn-secondary col-6" onClick={(e) => (this.addToList())} >ADD</button>
         </div>
         
-        <div>
-           <select name="SORT BY">
-             <option value='by name'>BY NAME </option>
-             <option value='by date'>BY DATE </option>
-           </select>
-           <label htmlFor="date">Due Date</label>
-           <input id="date" type="date"  onChange={(e)=>{this.dateChanged(e)}}></input>
-        </div>
+        <div className="row">
+          
+        <span className=" col-1"></span>
+            <label htmlFor="sel" className="sort">Sort By: </label> 
+              <select id="sel" onChange={(e)=>{this.sortBy(e)}} className="sort">
+                  <option >Select</option>
+                  <option value='by name'>By Name</option>
+                  <option value='by date'>By Date</option>
+              </select>
+            <span className=" col-5"></span>
+            <label  htmlFor="date col">Due Date:</label>
+            <input id="date" type="date" className="col-2" onChange={(e)=>{this.dateChanged(e)}}></input> 
+            <span className="col-2"></span>
+          </div>
         
-        <div>
-           <p className="tasks ">Completed Tasks/Total Tasks </p>
-           <p className="tasks ">{this.state.selected}/{this.state.total }</p>
+           <div>       
+           <h4 className="tasks ">Completed Tasks/Total Tasks </h4>
+           <h4 className="tasks ">{this.state.selected}/{this.state.total }</h4>
            {this.getList()}  
-         </div>
+           </div>
    
    </div>
 
