@@ -69,6 +69,7 @@ class App extends React.Component{
         })
     }
     console.log(this.state.list[i].status);
+    
   }
   
 
@@ -169,11 +170,11 @@ class App extends React.Component{
     arr= this.state.list.map((item,i)=>{
       return(
         <div key={i} className="row">
-         <button onClick={(e)=>{this.changeStatus(i)}} className={item.status?"paper-btn btn-success  animated slideInUp col-4 ":"  animated slideInUp btn-block col-4 "} >{item.title}<span> {item.time}</span><span> {item.date}</span></button>
-         <button onClick={(e)=>{this.upShift(i)}} className="paper-btn btn-warning   animated slideInUp col-2">UP</button>
-         <button onClick={(e)=>{this.downShift(i)}} className="paper-btn btn-secondary   animated slideInUp col-2">DOWN</button>
-         <button onClick={(e)=>{this.throwInput(i)}} className="paper-btn btn-primary   animated slideInUp col-2">X</button>
-         <p className="alert alert-danger animated slideInUp col-2">Due Date : {item.duedate}</p>
+         <button onClick={(e)=>{this.changeStatus(i)}} className={item.status?"paper-btn btn-success  animated slideInDown col-4 ":"  animated slideInDown btn-block col-4 "} >{item.title}<span> {item.time}</span><span> {item.date}</span></button>
+         <button onClick={(e)=>{this.upShift(i)}} className="paper-btn btn-warning   animated slideInDown col-2">UP</button>
+         <button onClick={(e)=>{this.downShift(i)}} className="paper-btn btn-warning   animated slideInDown col-2">DOWN</button>
+         <button onClick={(e)=>{this.throwInput(i)}} className="paper-btn btn-primary   animated slideInDown col-2">X</button>
+         <p className="alert alert-danger animated slideInDown col-2">Due Date : {item.duedate}</p>
         </div>
       )
     })
@@ -182,35 +183,51 @@ class App extends React.Component{
   
   render()
   {
+    
+      let styles = {
+          position: 'fixed',
+          top: '0px',
+          left: '0px',
+          zIndex: '101px',
+          background: 'white',
+          margin: '0px',
+          height: '15px'
+      }
+      
+      
     return(
       <div>
+          <div style = {styles} className="progress col-12">
+      <div  className={`bar striped success w-${((parseFloat((this.state.selected/this.state.total).toFixed(2)))*100)}`}></div>
+    </div>
+      
         <h1 className="texts animated bounceIn">TODO LIST!</h1>
+       
         <div className="row">
            <input type="text" onChange={(e) => (this.getInput(e)) } value={this.state.change} placeholder="enter text"
            className='col-6'/>
-           <button className="paper-btn btn-secondary col-6" onClick={(e) => (this.addToList())} >ADD</button>
+           <button className="paper-btn btn-secondary col-6 " onClick={(e) => (this.addToList())} >ADD</button>
         </div>
         
-        <div className="row">
-          
-        <span className=" col-1"></span>
-            <label htmlFor="sel" className="sort">Sort By: </label> 
+        <div className="row">   
+            <span className=" col-2"></span>
+            <label htmlFor="sel" className="sort col">Sort By: </label> 
               <select id="sel" onChange={(e)=>{this.sortBy(e)}} className="sort">
                   <option >Select</option>
                   <option value='by name'>By Name</option>
                   <option value='by date'>By Date</option>
               </select>
-            <span className=" col-5"></span>
-            <label  htmlFor="date col">Due Date:</label>
-            <input id="date" type="date" className="col-2" onChange={(e)=>{this.dateChanged(e)}}></input> 
-            <span className="col-2"></span>
-          </div>
+            <span className=" col-2"></span>
+            <label  htmlFor="date" className="col">Due Date:</label>
+              <input id="date" type="date" className="col-2" onChange={(e)=>{this.dateChanged(e)}}></input> 
+            
+            </div>
         
-           <div>       
+        <div>       
            <h4 className="tasks ">Completed Tasks/Total Tasks </h4>
            <h4 className="tasks ">{this.state.selected}/{this.state.total }</h4>
-           {this.getList()}  
-           </div>
+          {this.getList()}
+        </div>
    
    </div>
 
